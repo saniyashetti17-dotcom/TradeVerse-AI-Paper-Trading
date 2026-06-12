@@ -9,6 +9,8 @@ import {
   CartesianGrid,
 } from "recharts";
 
+const API_URL = "https://tradeverse-backend-j4r0.onrender.com";
+
 export default function Dashboard() {
   const [balance, setBalance] = useState(0);
   const [portfolio, setPortfolio] = useState([]);
@@ -22,23 +24,23 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/balance")
+    fetch(`${API_URL}/balance`)
       .then((res) => res.json())
       .then((data) => setBalance(data.balance || 0));
 
-    fetch("http://127.0.0.1:8000/portfolio-summary")
+    fetch(`${API_URL}/portfolio-summary`)
       .then((res) => res.json())
       .then((data) => setPortfolio(Array.isArray(data) ? data : []));
 
-    fetch("http://127.0.0.1:8000/watchlist")
+    fetch(`${API_URL}/watchlist`)
       .then((res) => res.json())
       .then((data) => setWatchlist(Array.isArray(data) ? data : []));
 
-    fetch("http://127.0.0.1:8000/transactions")
+    fetch(`${API_URL}/transactions`)
       .then((res) => res.json())
       .then((data) => setTransactions(Array.isArray(data) ? data : []));
 
-    fetch("http://127.0.0.1:8000/market-ai")
+    fetch(`${API_URL}/market-ai`)
       .then((res) => res.json())
       .then((data) => {
         const sorted = Array.isArray(data)
@@ -47,11 +49,11 @@ export default function Dashboard() {
         setAiPicks(sorted.slice(0, 5));
       });
 
-    fetch("http://127.0.0.1:8000/commodities")
+    fetch(`${API_URL}/commodities`)
       .then((res) => res.json())
       .then((data) => setCommodities(Array.isArray(data) ? data : []));
 
-    fetch("http://127.0.0.1:8000/top-movers")
+    fetch(`${API_URL}/top-movers`)
       .then((res) => res.json())
       .then((data) =>
         setMovers({
@@ -102,7 +104,7 @@ export default function Dashboard() {
       {bestSignal && (
         <div className="bg-gradient-to-r from-green-600 to-emerald-900 p-6 rounded-2xl mb-8">
           <p className="text-sm text-green-100">🚀 Best Buy Today</p>
-
+          
           <h2 className="text-4xl font-bold mt-2">{bestSignal.symbol}</h2>
 
           <div className="grid md:grid-cols-4 gap-4 mt-6">
