@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
 
+const API_URL = "https://tradeverse-backend-j4r0.onrender.com";
+
 export default function Watchlist() {
   const [watchlist, setWatchlist] = useState([]);
 
   const loadWatchlist = () => {
-    fetch("http://127.0.0.1:8000/watchlist")
+    fetch(`${API_URL}/watchlist`)
       .then((res) => res.json())
-      .then((data) => setWatchlist(data));
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setWatchlist(data);
+        } else {
+          setWatchlist([]);
+        }
+      });
   };
 
   useEffect(() => {
@@ -14,12 +22,9 @@ export default function Watchlist() {
   }, []);
 
   const removeStock = async (stock) => {
-    const response = await fetch(
-      `http://127.0.0.1:8000/watchlist/${stock}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const response = await fetch(`${API_URL}/watchlist/${stock}`, {
+      method: "DELETE",
+    });
 
     const data = await response.json();
     alert(data.message || data.error);
@@ -29,17 +34,21 @@ export default function Watchlist() {
 
   return (
     <div>
-      <h1 className="text-4xl font-bold mb-8">⭐ Watchlist</h1>
+      <h1 className="text-4xl font-bold mb-2">⭐ Watchlist</h1>
 
-      <div className="bg-slate-900 rounded-2xl p-6">
+      <p className="text-slate-400 mb-8">
+        Track your favorite stocks and market assets.
+      </p>
+
+      <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800">
         {watchlist.length === 0 ? (
           <p className="text-slate-400">No stocks in watchlist yet.</p>
         ) : (
-          <table className="w-full">
+          <table className="w-full text-left">
             <thead>
               <tr className="text-slate-400">
-                <th className="text-left pb-4">Stock</th>
-                <th className="text-left pb-4">Action</th>
+                <th className="pb-4">Stock</th>
+                <th className="pb-4">Action</th>
               </tr>
             </thead>
 
