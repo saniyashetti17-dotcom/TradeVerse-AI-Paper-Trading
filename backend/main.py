@@ -15,7 +15,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://trade-verse-ai-paper-git-e9566d-saniyashetti17-dotcoms-projects.vercel.app",
+        "https://trade-verse-ai-paper-trading.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
