@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 
+const API_URL = "https://tradeverse-backend-j4r0.onrender.com";
+
 export default function Portfolio() {
   const [portfolio, setPortfolio] = useState([]);
   const [advisor, setAdvisor] = useState([]);
 
   const fetchPortfolio = async () => {
-    const res = await fetch("http://127.0.0.1:8000/portfolio-summary");
+    const res = await fetch(`${API_URL}/portfolio-summary`);
     const data = await res.json();
 
     if (Array.isArray(data)) {
@@ -16,7 +18,7 @@ export default function Portfolio() {
   };
 
   const fetchLivePortfolio = async () => {
-    const res = await fetch("http://127.0.0.1:8000/portfolio-live-summary");
+    const res = await fetch(`${API_URL}/portfolio-live-summary`);
     const data = await res.json();
 
     if (Array.isArray(data)) {
@@ -25,7 +27,7 @@ export default function Portfolio() {
   };
 
   const fetchAdvisor = async () => {
-    const res = await fetch("http://127.0.0.1:8000/portfolio-advisor");
+    const res = await fetch(`${API_URL}/portfolio-advisor`);
     const data = await res.json();
 
     if (Array.isArray(data)) {
@@ -48,7 +50,7 @@ export default function Portfolio() {
   }, []);
 
   const sellStock = async (stock) => {
-    const res = await fetch("http://127.0.0.1:8000/sell", {
+    const res = await fetch(`${API_URL}/sell`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,7 +59,7 @@ export default function Portfolio() {
     });
 
     const data = await res.json();
-    alert(data.message || data.error);
+    alert(data.message || data.error || "Stock Sold");
 
     fetchPortfolio();
     fetchAdvisor();
