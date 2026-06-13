@@ -512,71 +512,39 @@ def get_portfolio(db: Session = Depends(get_db)):
 
 @app.get("/portfolio-summary")
 def get_portfolio_summary(db: Session = Depends(get_db)):
-    holdings = db.query(Portfolio).all()
-    result = []
+    try:
+        holdings = db.query(Portfolio).all()
+        result = []
 
-    for holding in holdings:
-        live = get_live_price(holding.stock)
-        current_price = live["price"]
+        for holding in holdings:
+            live = get_live_price(holding.stock)
+            current_price = live["price"]
 
-        if current_price == 0:
-            current_price = holding.buy_price
+            if current_price == 0:
+                current_price = holding.buy_price
 
-        current_value = current_price * holding.quantity
-        profit_loss = current_value - holding.total
+            current_value = current_price * holding.quantity
+            profit_loss = current_value - holding.total
 
-        ai = generate_ai_signal(holding.stock)
+            ai = generate_ai_signal(holding.stock)
 
-        result.append({
-            "stock": holding.stock,
-            "quantity": holding.quantity,
-            "buy_price": holding.buy_price,
-            "current_price": int(current_price),
-            "invested": holding.total,
-            "current_value": int(current_value),
-            "profit_loss": int(profit_loss),
-            "ai_signal": ai.get("signal", "HOLD"),
-            "confidence": ai.get("confidence", 50)
-        })
+            result.append({
+                "stock": holding.stock,
+                "quantity": holding.quantity,
+                "buy_price": holding.buy_price,
+                "current_price": int(current_price),
+                "invested": holding.total,
+                "current_value": int(current_value),
+                "profit_loss": int(profit_loss),
+                "ai_signal": ai.get("signal", "HOLD"),
+                "confidence": ai.get("confidence", 50)
+            })
 
-    return result
+        return result
 
-
-@app.get("/portfolio-live-summary")
-def get_portfolio_live_summary(db: Session = Depends(get_db)):
-    return get_portfolio_summary(db)
-
-
-@app.get("/portfolio-advisor")
-def portfolio_advisor(db: Session = Depends(get_db)):
-    holdings = db.query(Portfolio).all()
-
-    advice = []
-
-    for holding in holdings:
-
-        ai = generate_ai_signal(holding.stock)
-
-        recommendation = "HOLD"
-
-        if ai["signal"] == "STRONG BUY":
-            recommendation = "BUY MORE"
-
-        elif ai["signal"] == "BUY":
-            recommendation = "HOLD"
-
-        elif ai["signal"] == "SELL":
-            recommendation = "SELL"
-
-        advice.append({
-            "stock": holding.stock,
-            "signal": ai["signal"],
-            "confidence": ai["confidence"],
-            "recommendation": recommendation
-        })
-
-    return advice
-
+    except Exception as e:
+        return []
+    
 
 @app.get("/transactions")
 def get_transactions(db: Session = Depends(get_db)):
@@ -585,7 +553,10 @@ def get_transactions(db: Session = Depends(get_db)):
 
 @app.get("/balance")
 def get_balance(db: Session = Depends(get_db)):
-    return {"balance": calculate_balance(db)}
+    try:
+        return {"balance": calculate_balance(db)}
+    except Exception as e:
+        return {"balance": START_BALANCE, "error": str(e)}
 
 
 @app.post("/watchlist/{stock}")
